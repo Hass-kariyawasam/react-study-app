@@ -1,0 +1,732 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  BookOpen, 
+  Code, 
+  CheckCircle2, 
+  Circle, 
+  PlayCircle, 
+  ExternalLink, 
+  ChevronRight, 
+  Terminal,
+  Layers,
+  Cpu,
+  Globe,
+  Database,
+  Layout,
+  Monitor,
+  FolderOpen,
+  FileCode,
+  AlertTriangle,
+  Moon,
+  Sun,
+  Menu,
+  X,
+  Youtube
+} from 'lucide-react';
+
+// --- COMPONENTS ---
+
+// Visual "Screenshot" Component
+const MockScreenshot = ({ title, children, type = "code" }) => (
+  <div className="my-6 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 transition-colors">
+    <div className="bg-gray-100 dark:bg-gray-900 px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
+      {type === "browser" ? <Globe size={14} className="text-gray-500 dark:text-gray-400"/> : <Terminal size={14} className="text-gray-500 dark:text-gray-400"/>}
+      <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">{title}</span>
+    </div>
+    <div className="p-0 text-gray-800 dark:text-gray-200">
+      {children}
+    </div>
+  </div>
+);
+
+// Code Block Component
+const CodeBlock = ({ title, code }) => (
+  <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div className="bg-gray-50 dark:bg-gray-800 px-3 py-1.5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{title}</span>
+      <div className="flex gap-1.5">
+        <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+        <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+      </div>
+    </div>
+    <div className="bg-gray-900 p-4 overflow-x-auto">
+      <pre className="text-xs font-mono text-blue-300 leading-relaxed">
+        <code>{code}</code>
+      </pre>
+    </div>
+  </div>
+);
+
+// --- MAIN APP ---
+
+const StudyPlanApp = () => {
+  const [activeDay, setActiveDay] = useState(1);
+  const [activeModuleIndex, setActiveModuleIndex] = useState(0); // For switching between videos in a day
+  const [completedSubTasks, setCompletedSubTasks] = useState({});
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Reset module index when day changes
+  useEffect(() => {
+    setActiveModuleIndex(0);
+    setIsMobileMenuOpen(false); // Close mobile menu on selection
+  }, [activeDay]);
+
+  const toggleSubTask = (dayId, taskId) => {
+    const key = `${dayId}-${taskId}`;
+    setCompletedSubTasks(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const getProgress = (dayId, totalTasks) => {
+    let completed = 0;
+    for (let i = 0; i < totalTasks; i++) {
+      if (completedSubTasks[`${dayId}-${i}`]) completed++;
+    }
+    return Math.round((completed / totalTasks) * 100);
+  };
+
+  // --- DATA STRUCTURE ---
+  const days = [
+    { id: 1, title: "JS Foundation", icon: <Terminal size={18} /> },
+    { id: 2, title: "React Basics", icon: <Layers size={18} /> },
+    { id: 3, title: "State & Events", icon: <Cpu size={18} /> },
+    { id: 4, title: "Lists & Logic", icon: <Layout size={18} /> },
+    { id: 5, title: "Forms & Effects", icon: <Database size={18} /> },
+    { id: 6, title: "Routing", icon: <Globe size={18} /> },
+    { id: 7, title: "Final Project", icon: <CheckCircle2 size={18} /> },
+  ];
+
+  const content = {
+    1: {
+      title: "Day 1: JavaScript Refresher",
+      description: "Before React, you must understand 'Modern JavaScript'. React is just JavaScript with a fancy structure.",
+      checklist: [
+        "Install Node.js (LTS Version)",
+        "Verify installation (node -v)",
+        "Create 'js-practice' folder",
+        "Write an arrow function",
+        "Use 'map' to loop an array",
+        "Use 'destructuring' on an object"
+      ],
+      modules: [
+        {
+          title: "Unit 01: Environment Setup",
+          duration: "30 mins",
+          notes: (
+            <div className="space-y-6">
+              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border-l-4 border-blue-500 text-blue-900 dark:text-blue-100">
+                <h4 className="font-bold flex items-center gap-2">🎯 Why Node.js?</h4>
+                <p className="text-sm mt-1">
+                  We don't use Node.js to write backend code here. We use it to <strong>run the build tools</strong> (like Vite) that compile React code.
+                </p>
+              </div>
+              <MockScreenshot title="Terminal - Success Message" type="terminal">
+                <div className="bg-gray-900 text-gray-100 p-4 font-mono text-sm">
+                  <div className="flex gap-2"><span className="text-green-400">➜</span><span>node -v</span></div>
+                  <div className="text-gray-400 mb-2">v18.17.0</div>
+                  <div className="flex gap-2"><span className="text-green-400">➜</span><span>npm -v</span></div>
+                  <div className="text-gray-400">9.6.7</div>
+                </div>
+              </MockScreenshot>
+            </div>
+          )
+        },
+        {
+          title: "Unit 02: ES6 Features",
+          duration: "45 mins",
+          notes: (
+            <div className="space-y-6">
+               <p className="text-gray-600 dark:text-gray-300 text-sm">
+                 These are the 3 concepts you will use 90% of the time in React.
+               </p>
+               
+               {/* Arrow Functions */}
+               <div className="border-l-2 border-purple-500 pl-4">
+                 <h4 className="font-bold text-gray-800 dark:text-white">1. Arrow Functions</h4>
+                 <CodeBlock title="Comparison" code={`// Old
+function Hello() {
+  return "Hi";
+}
+
+// New (React Component Style)
+const Hello = () => {
+  return "Hi";
+};`} />
+               </div>
+
+               {/* Destructuring */}
+               <div className="border-l-2 border-pink-500 pl-4 pt-4">
+                 <h4 className="font-bold text-gray-800 dark:text-white">2. Destructuring (Object Unpacking)</h4>
+                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Extracting values directly.</p>
+                 <CodeBlock title="Destructuring" code={`const person = { name: 'Saman', age: 25 };
+
+// Instead of: person.name
+const { name, age } = person;
+
+console.log(name); // 'Saman'`} />
+               </div>
+
+               {/* Map */}
+               <div className="border-l-2 border-yellow-500 pl-4 pt-4">
+                 <h4 className="font-bold text-gray-800 dark:text-white">3. Array .map()</h4>
+                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Used to display lists in React.</p>
+                 <CodeBlock title="Looping" code={`const colors = ['red', 'blue'];
+
+const html = colors.map(color => {
+  return "<h1>" + color + "</h1>";
+});`} />
+               </div>
+            </div>
+          )
+        }
+      ]
+    },
+    2: {
+      title: "Day 2: React Basics",
+      description: "Building your first component architecture.",
+      checklist: [
+        "Create Vite App",
+        "Clean boilerplate code",
+        "Create 'components' folder",
+        "Build a Header component",
+        "Pass Props"
+      ],
+      modules: [
+        {
+          title: "Unit 03: SPA Concepts",
+          duration: "20 mins",
+          notes: (
+             <div className="space-y-4">
+                <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg text-orange-900 dark:text-orange-100">
+                  <h4 className="font-bold">Traditional vs SPA</h4>
+                  <ul className="list-disc pl-5 mt-2 text-sm space-y-2">
+                    <li><strong>Traditional (MPA):</strong> Every click reloads the page (white flash).</li>
+                    <li><strong>SPA (React):</strong> Only the content inside the `div id="root"` changes. The page never reloads.</li>
+                  </ul>
+                </div>
+             </div>
+          )
+        },
+        {
+          title: "Unit 04: Components & Props",
+          duration: "1 Hour",
+          notes: (
+            <div className="space-y-6">
+              <MockScreenshot title="Component Tree Visualization" type="code">
+                <div className="flex flex-col items-center gap-4 bg-gray-50 dark:bg-gray-800 p-4">
+                  <div className="bg-purple-100 dark:bg-purple-900 border-2 border-purple-500 px-4 py-2 rounded text-purple-900 dark:text-purple-100 font-bold text-sm">
+                    App.jsx (Parent)
+                  </div>
+                  <div className="h-6 w-0.5 bg-gray-400"></div>
+                  <div className="flex gap-4">
+                    <div className="bg-blue-100 dark:bg-blue-900 border-2 border-blue-500 px-3 py-1 rounded text-blue-900 dark:text-blue-100 text-xs">
+                      Header.jsx
+                    </div>
+                    <div className="bg-green-100 dark:bg-green-900 border-2 border-green-500 px-3 py-1 rounded text-green-900 dark:text-green-100 text-xs">
+                      Card.jsx <span className="text-[10px] opacity-70 block">(props: name="A")</span>
+                    </div>
+                    <div className="bg-green-100 dark:bg-green-900 border-2 border-green-500 px-3 py-1 rounded text-green-900 dark:text-green-100 text-xs">
+                      Card.jsx <span className="text-[10px] opacity-70 block">(props: name="B")</span>
+                    </div>
+                  </div>
+                </div>
+              </MockScreenshot>
+
+              <CodeBlock title="Passing Props" code={`// Parent (App.jsx)
+<Card title="React Guide" views={500} />
+
+// Child (Card.jsx)
+// We destructure 'title' and 'views' instantly
+const Card = ({ title, views }) => {
+  return (
+    <div className="card">
+       <h2>{title}</h2>
+       <p>Views: {views}</p>
+    </div>
+  );
+}`} />
+            </div>
+          )
+        }
+      ]
+    },
+    3: {
+      title: "Day 3: State Management",
+      description: "Understanding useState and Event Handling.",
+      checklist: [
+        "Import useState",
+        "Create counter state",
+        "Add onClick handler",
+        "Conditional Styles"
+      ],
+      modules: [
+        {
+          title: "Unit 05: useState Hook",
+          duration: "1 Hour",
+          notes: (
+            <div className="space-y-6">
+              <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border-l-4 border-red-500 text-red-900 dark:text-red-100">
+                <h4 className="font-bold flex items-center gap-2"><AlertTriangle size={16}/> IMPORTANT</h4>
+                <p className="text-sm mt-1">
+                  Never modify state directly. <br/>
+                  <code className="bg-red-200 dark:bg-red-900 px-1">count = 5</code> (WRONG ❌)<br/>
+                  <code className="bg-green-200 dark:bg-green-900 px-1">setCount(5)</code> (CORRECT ✅)
+                </p>
+              </div>
+
+              <CodeBlock title="The Pattern" code={`import { useState } from 'react';
+
+const Counter = () => {
+  // 1. Initialize State
+  // [currentValue, functionToUpdateIt]
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    // 2. Update State
+    setCount(count + 1); 
+    // This triggers a "Re-render" automatically
+  };
+
+  return (
+    <button onClick={increment}>
+      Count is: {count}
+    </button>
+  );
+}`} />
+            </div>
+          )
+        }
+      ]
+    },
+    4: {
+      title: "Day 4: Lists & Keys",
+      description: "Rendering dynamic lists of data.",
+      checklist: ["Create array data", "Map data in JSX", "Add Key prop", "Delete item logic"],
+      modules: [
+        {
+          title: "Unit 06: Rendering Lists",
+          duration: "1 Hour",
+          notes: (
+            <div className="space-y-6">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                When you have an array of data, you don't write Components one by one. You map them.
+              </p>
+              <CodeBlock title="The .map() Strategy" code={`const users = [
+  { id: 1, name: "Kasun" },
+  { id: 2, name: "Amal" }
+];
+
+return (
+  <div>
+    {users.map((user) => (
+      // The KEY is critical for React performance
+      <div key={user.id} className="user-card">
+        <h3>{user.name}</h3>
+      </div>
+    ))}
+  </div>
+);`} />
+            </div>
+          )
+        }
+      ]
+    },
+    5: {
+      title: "Day 5: Effects & Forms",
+      description: "Talking to APIs and handling inputs.",
+      checklist: ["Create Input field", "Handle onChange", "useEffect setup", "Fetch API data"],
+      modules: [
+        {
+          title: "Unit 07: Forms",
+          duration: "45 mins",
+          notes: (
+             <div className="space-y-4">
+               <h4 className="font-bold text-gray-800 dark:text-white">Controlled Components</h4>
+               <p className="text-xs text-gray-600 dark:text-gray-400">React controls the input, not the HTML DOM.</p>
+               <CodeBlock title="Input Pattern" code={`const [text, setText] = useState("");
+
+<input 
+  value={text} 
+  onChange={(e) => setText(e.target.value)} 
+/>`} />
+             </div>
+          )
+        },
+        {
+          title: "Unit 08: useEffect",
+          duration: "1 Hour",
+          notes: (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded border dark:border-gray-700">
+                    <code className="text-xs font-bold text-blue-500">useEffect(fn)</code>
+                    <p className="text-[10px] mt-1 text-gray-500">Runs on EVERY render. Dangerous.</p>
+                 </div>
+                 <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded border border-green-200 dark:border-green-800">
+                    <code className="text-xs font-bold text-green-600">useEffect(fn, [])</code>
+                    <p className="text-[10px] mt-1 text-gray-500">Runs ONCE (Mount). Perfect for API calls.</p>
+                 </div>
+              </div>
+            </div>
+          )
+        }
+      ]
+    },
+    6: {
+      title: "Day 6: Routing",
+      description: "Multi-page feeling without reloading.",
+      checklist: ["Install react-router-dom", "Setup BrowserRouter", "Define Routes", "Use Link"],
+      modules: [
+        {
+          title: "Unit 09: React Router",
+          duration: "1 Hour",
+          notes: (
+            <div className="space-y-6">
+               <MockScreenshot title="App.jsx Structure" type="code">
+                  <div className="bg-gray-900 text-gray-300 p-4 font-mono text-xs">
+                    <div>&lt;BrowserRouter&gt;</div>
+                    <div className="pl-4">&lt;Routes&gt;</div>
+                    <div className="pl-8 text-yellow-300">&lt;Route path="/" element={'{<Home />}'} /&gt;</div>
+                    <div className="pl-8 text-yellow-300">&lt;Route path="/about" element={'{<About />}'} /&gt;</div>
+                    <div className="pl-4">&lt;/Routes&gt;</div>
+                    <div>&lt;/BrowserRouter&gt;</div>
+                  </div>
+               </MockScreenshot>
+            </div>
+          )
+        }
+      ]
+    },
+    7: {
+      title: "Day 7: Deployment",
+      description: "Final Project and going live on Firebase.",
+      checklist: ["Build Movie App", "Get API Key", "Install Firebase Tools", "Firebase Init", "Firebase Deploy"],
+      modules: [
+        {
+          title: "Final Project Logic",
+          duration: "2 Hours",
+          notes: (
+             <div className="p-4 bg-emerald-50 dark:bg-emerald-900/30 rounded border border-emerald-200 dark:border-emerald-700">
+               <h4 className="font-bold text-emerald-800 dark:text-emerald-100">Congratulations! 🚀</h4>
+               <p className="text-sm text-emerald-700 dark:text-emerald-200 mt-2">
+                 You have completed the bootcamp. Now let's prepare for deployment.
+               </p>
+               <div className="mt-4 flex gap-2">
+                 <span className="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs border">npm run build</span>
+                 <span className="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs border">dist folder</span>
+               </div>
+             </div>
+          )
+        },
+        {
+          title: "Firebase Hosting",
+          duration: "45 mins",
+          notes: (
+            <div className="space-y-6">
+               <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg border-l-4 border-yellow-500 text-yellow-900 dark:text-yellow-100">
+                  <h4 className="font-bold">🔥 Hosting on Firebase</h4>
+                  <p className="text-sm mt-1">Follow these commands strictly in your VS Code terminal.</p>
+               </div>
+
+               <div className="space-y-2">
+                  <h5 className="font-bold text-sm text-gray-700 dark:text-gray-300">1. Install Tools & Login</h5>
+                  <MockScreenshot title="Terminal - Setup" type="terminal">
+                    <div className="bg-gray-900 text-gray-100 p-4 font-mono text-sm space-y-2">
+                      <div className="flex gap-2"><span className="text-green-400">➜</span><span>npm install -g firebase-tools</span></div>
+                      <div className="text-gray-400">added 1 package in 2s</div>
+                      <div className="flex gap-2"><span className="text-green-400">➜</span><span>firebase login</span></div>
+                      <div className="text-white">? Allow Firebase to collect CLI usage and error reporting information? Yes</div>
+                      <div className="text-green-400">Success! Logged in as user@gmail.com</div>
+                    </div>
+                  </MockScreenshot>
+               </div>
+
+               <div className="space-y-2">
+                  <h5 className="font-bold text-sm text-gray-700 dark:text-gray-300">2. Initialize Project</h5>
+                  <MockScreenshot title="Terminal - Initialization" type="terminal">
+                    <div className="bg-gray-900 text-gray-100 p-4 font-mono text-sm space-y-1">
+                      <div className="flex gap-2"><span className="text-green-400">➜</span><span>firebase init</span></div>
+                      <div className="text-cyan-400 font-bold">? Which Firebase features do you want to set up?</div>
+                      <div className="text-gray-300"> ( ) Realtime Database</div>
+                      <div className="text-green-400"> (*) Hosting: Configure files for Firebase Hosting</div>
+                      <div className="text-gray-300"> ( ) Storage</div>
+                      <div className="mt-2 text-cyan-400 font-bold">? What do you want to use as your public directory?</div>
+                      <div className="text-white">dist</div>
+                      <div className="mt-2 text-cyan-400 font-bold">? Configure as a single-page app?</div>
+                      <div className="text-white">Yes</div>
+                    </div>
+                  </MockScreenshot>
+               </div>
+
+               <div className="space-y-2">
+                  <h5 className="font-bold text-sm text-gray-700 dark:text-gray-300">3. Build & Deploy</h5>
+                   <MockScreenshot title="Terminal - Deploy" type="terminal">
+                    <div className="bg-gray-900 text-gray-100 p-4 font-mono text-sm space-y-2">
+                      <div className="flex gap-2"><span className="text-green-400">➜</span><span>npm run build</span></div>
+                      <div className="text-gray-400">vite v4.4.0 building for production...</div>
+                      <div className="text-green-400">dist/index.html   0.45 kB │ gzip: 0.28 kB</div>
+                      <div className="flex gap-2 mt-2"><span className="text-green-400">➜</span><span>firebase deploy</span></div>
+                      <div className="text-gray-400">=== Deploying to 'my-movie-app'...</div>
+                      <div className="text-green-400 font-bold">✔  Deploy complete!</div>
+                      <div className="text-gray-300">Hosting URL: https://my-movie-app.web.app</div>
+                    </div>
+                  </MockScreenshot>
+               </div>
+               
+               <MockScreenshot title="Browser - Live Site" type="browser">
+                  <div className="bg-white p-4 text-center">
+                    <div className="text-green-600 font-bold">Hosting URL: https://my-movie-app.web.app</div>
+                    <div className="text-xs text-gray-400 mt-2">Your site is now online for everyone!</div>
+                  </div>
+               </MockScreenshot>
+            </div>
+          )
+        }
+      ]
+    }
+  };
+
+  const currentDay = content[activeDay];
+  
+  // FIX: Ensure the index is within bounds for the new day immediately during render
+  // This prevents the "undefined" error before the useEffect has a chance to reset the index
+  // If we switched from Day X (index 1) to Day Y (only has index 0), we force index 0.
+  const safeModuleIndex = (currentDay.modules && activeModuleIndex < currentDay.modules.length) 
+    ? activeModuleIndex 
+    : 0;
+
+  const currentModule = currentDay.modules[safeModuleIndex];
+  const progressPercent = getProgress(activeDay, currentDay.checklist.length);
+
+  return (
+    <div className={`${isDarkMode ? 'dark' : ''} flex flex-col h-screen font-sans transition-colors duration-300`}>
+      {/* Wrapper to handle dark mode background */}
+      <div className="flex-1 flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-hidden">
+        
+        {/* MOBILE HEADER */}
+        <div className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center z-20 shadow-sm">
+           <h1 className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
+              <BookOpen className="fill-blue-100 dark:fill-blue-900" size={20}/> React Camp
+           </h1>
+           <div className="flex items-center gap-3">
+             <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+               {isDarkMode ? <Sun size={18} className="text-yellow-400"/> : <Moon size={18} className="text-gray-600"/>}
+             </button>
+             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2">
+               {isMobileMenuOpen ? <X size={24}/> : <Menu size={24}/>}
+             </button>
+           </div>
+        </div>
+
+        {/* SIDEBAR (Desktop + Mobile Drawer) */}
+        <div className={`
+            fixed inset-0 z-10 bg-black/50 md:hidden transition-opacity duration-300
+            ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+        `} onClick={() => setIsMobileMenuOpen(false)} />
+        
+        <div className={`
+            fixed md:relative z-20 w-64 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 flex flex-col transition-transform duration-300
+            ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        `}>
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700 hidden md:block">
+            <div className="flex justify-between items-center">
+              <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                <BookOpen className="fill-blue-100 dark:fill-blue-900" /> React Camp
+              </h1>
+              <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                {isDarkMode ? <Sun size={18} className="text-yellow-400"/> : <Moon size={18} className="text-gray-400"/>}
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">7 Days to Mastery</p>
+          </div>
+
+          <div className="p-4 space-y-2 overflow-y-auto flex-1">
+            {days.map((day) => (
+              <button
+                key={day.id}
+                onClick={() => setActiveDay(day.id)}
+                className={`w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-colors ${
+                  activeDay === day.id
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                }`}
+              >
+                <div className={`p-1.5 rounded-md ${activeDay === day.id ? 'bg-blue-100 dark:bg-blue-800' : 'bg-gray-100 dark:bg-gray-700'}`}>
+                  {day.icon}
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="text-sm font-semibold">Day {day.id}</div>
+                    {getProgress(day.id, content[day.id].checklist.length) === 100 && (
+                       <CheckCircle2 size={14} className="text-green-500" />
+                    )}
+                  </div>
+                  {/* Mini Progress Bar */}
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-1 mt-2 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-blue-500 h-full transition-all duration-300"
+                      style={{ width: `${getProgress(day.id, content[day.id].checklist.length)}%` }}
+                    />
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 text-xs text-center text-gray-400">
+             Created for DP Education
+          </div>
+        </div>
+
+        {/* MAIN CONTENT AREA */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 relative">
+          <div className="max-w-5xl mx-auto">
+            
+            {/* Header Area */}
+            <div className="mb-8">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                   <div className="flex items-center gap-2 mb-2">
+                     <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
+                       Current Day
+                     </span>
+                   </div>
+                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{currentDay.title}</h2>
+                   <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">{currentDay.description}</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                  <div className="text-right">
+                     <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{progressPercent}%</div>
+                     <div className="text-[10px] text-gray-500 uppercase font-semibold">Completed</div>
+                  </div>
+                  <div className="h-10 w-10">
+                     <svg className="w-full h-full transform -rotate-90">
+                       <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-200 dark:text-gray-700" />
+                       <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray={100} strokeDashoffset={100 - progressPercent} className="text-blue-500 transition-all duration-500" />
+                     </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* TAB SELECTOR FOR VIDEOS (Crucial Feature Update) */}
+            <div className="mb-6 overflow-x-auto pb-2">
+              <div className="flex gap-2 min-w-max">
+                {currentDay.modules.map((module, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveModuleIndex(index)}
+                    className={`
+                      flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all
+                      ${safeModuleIndex === index 
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' 
+                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}
+                    `}
+                  >
+                    <Youtube size={16} className={safeModuleIndex === index ? "text-white" : "text-red-500"}/>
+                    {module.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Main Content Grid */}
+            <div className="grid lg:grid-cols-3 gap-6">
+              
+              {/* LEFT COLUMN: Detailed Notes (Takes up 2/3) */}
+              <div className="lg:col-span-2 space-y-6">
+                 
+                 {/* Current Video Info */}
+                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                       <PlayCircle size={100} />
+                    </div>
+                    <div className="relative z-10">
+                       <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-2">
+                          <PlayCircle size={18} />
+                          <span className="text-xs font-bold uppercase tracking-wider">Video Guide</span>
+                       </div>
+                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                         {currentModule.title}
+                       </h3>
+                       <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-2">
+                          <span className="flex items-center gap-1"><Monitor size={12}/> Duration: {currentModule.duration}</span>
+                          <span className="flex items-center gap-1"><Terminal size={12}/> Difficulty: Medium</span>
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* The Detailed Notes Area */}
+                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm min-h-[400px]">
+                    <h3 className="text-lg font-bold flex items-center gap-2 mb-6 text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-700 pb-4">
+                      <BookOpen className="text-purple-500" size={20} />
+                      Study Notes
+                    </h3>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      {currentModule.notes}
+                    </div>
+                 </div>
+
+              </div>
+
+              {/* RIGHT COLUMN: Checklist & Extras */}
+              <div className="space-y-6">
+                
+                {/* Checklist */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+                  <div className="bg-gray-50 dark:bg-gray-900/50 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="font-bold text-sm flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                      <CheckCircle2 className="text-green-500" size={16} />
+                      Daily Checklist
+                    </h3>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    {currentDay.checklist.map((task, idx) => (
+                      <label key={idx} className="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div className="relative flex items-center mt-0.5">
+                          <input 
+                            type="checkbox" 
+                            className="peer sr-only"
+                            checked={!!completedSubTasks[`${activeDay}-${idx}`]}
+                            onChange={() => toggleSubTask(activeDay, idx)}
+                          />
+                          <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-500 rounded peer-checked:bg-green-500 peer-checked:border-green-500 transition-all flex items-center justify-center">
+                            <CheckCircle2 size={10} className="text-white opacity-0 peer-checked:opacity-100" />
+                          </div>
+                        </div>
+                        <span className={`text-xs leading-relaxed transition-colors ${completedSubTasks[`${activeDay}-${idx}`] ? 'text-gray-400 line-through' : 'text-gray-600 dark:text-gray-300'}`}>
+                          {task}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pro Tip Card */}
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 p-5 rounded-xl border border-yellow-200 dark:border-yellow-800/50">
+                   <div className="flex items-center gap-2 mb-2">
+                      <div className="bg-yellow-100 dark:bg-yellow-900 p-1.5 rounded-full">
+                        <Monitor size={14} className="text-yellow-700 dark:text-yellow-400"/>
+                      </div>
+                      <h4 className="font-bold text-yellow-800 dark:text-yellow-400 text-sm">Quick Tip</h4>
+                   </div>
+                   <p className="text-xs text-yellow-800/80 dark:text-yellow-300/80 leading-relaxed">
+                     Switch between "Video Tabs" above the notes section to see specific code examples for each unit in the playlist!
+                   </p>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default StudyPlanApp;
