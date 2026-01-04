@@ -1,7 +1,7 @@
 {
   "name": "my-app",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.0",
   "type": "module",
   "author": "Your Name",
   "description": "My React Study App",
@@ -17,7 +17,8 @@
     "preview": "vite preview",
     "electron": "electron .",
     "dist": "npm run build && electron-builder",
-    "publish": "npm run build && electron-builder --publish always"
+    "publish": "npm run build && electron-builder --publish always",
+    "android": "npx cap open android"
   },
   "build": {
     "appId": "com.reactstudy.app",
@@ -57,6 +58,8 @@
     ]
   },
   "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
     "electron-updater": "^6.6.2",
     "firebase": "^12.7.0",
     "lucide-react": "^0.562.0",
@@ -64,6 +67,8 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.0.0",
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",

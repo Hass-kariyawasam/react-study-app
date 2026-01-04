@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">React Study Camp</string>
+    <string name="title_activity_main">React Study Camp</string>
+    <string name="package_name">com.reactstudy.app</string>
+    <string name="custom_url_scheme">com.reactstudy.app</string>
+</resources>
